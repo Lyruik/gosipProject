@@ -18,9 +18,9 @@ import (
 )
 
 func main() {
-	extIP := flag.String("ip", "172.17.9.6:5060", "My external ip")
+	extIP := flag.String("ip", "10.12.1.50:5060", "My external ip")
 	creds := flag.String("u", "alice:alice", "Comma seperated username:password list")
-	tran := falg.String("t", "udp", "Transport")
+	tran := flag.String("t", "udp", "Transport")
 	tlskey := flag.String("tlskey", "", "TLS key path")
 	tlscrt := flag.String("tlscrt", "", "TLS crt path")
 	flag.Parse()
@@ -29,7 +29,7 @@ func main() {
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnixMicro
 	log.Logger = zerolog.New(zerolog.ConsoleWriter{
-		Out: os.Stdout,
+		Out:        os.Stdout,
 		TimeFormat: time.StampMicro,
 	}).With().Timestamp().Logger().Level(zerolog.InfoLevel)
 
@@ -38,12 +38,12 @@ func main() {
 	}
 
 	registry := make(map[string]string)
-	for _, c = range strings.Split(*creds, ",") {
+	for _, c := range strings.Split(*creds, ",") {
 		arr := strings.Split(c, ":")
 		registry[arr[0]] = arr[1]
 	}
 
-	us, err := sipgo.NewUA(
+	ua, err := sipgo.NewUA(
 		sipgo.WithUserAgent("SIPGO"),
 	)
 	if err != nil {
@@ -54,17 +54,17 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Fail to setup server handle")
 	}
-	
+
 	ctx := context.TODO()
 
 	var chal digest.Challenge
-	srv.OnRegister(func(req *sip.Request, tx, sip.ServerTransaction) {
+	srv.OnRegister(func(req *sip.Request, tx sip.ServerTransaction) {
 		h := req.GetHeader("Authorization")
 		if h == nil {
 			chal = digest.Challenge{
-				Realm: "sipgo-server",
-				Nonce: fmt.Sprintf("%d", time.Now().UnixMicro()),
-				Opaque: "sipgo",
+				Realm:     "sipgo-server",
+				Nonce:     fmt.Sprintf("%d", time.Now().UnixMicro()),
+				Opaque:    "sipgo",
 				Algorithm: "MD5",
 			}
 
@@ -75,10 +75,10 @@ func main() {
 			return
 		}
 
-		cred, err := digest.ParseCredentials(h.Vlaue())
+		cred, err := digest.ParseCredentials(h.Value())
 		if err != nil {
 			log.Error().Err(err).Msg("parsing creds failed")
-			tx.REspond(sip.NewResponseFromRequest(req, 401, "Bad credentials", nil))
+			tx.Respond(sip.NewResponseFromRequest(req, 401, "Bad credentials", nil))
 			return
 		}
 
@@ -88,32 +88,40 @@ func main() {
 			return
 		}
 
-		digCred, err := digeest.Digest(&chal, digest.Options{
-			Method: "REGISTER",
-			URL: cred.URI,
-			Username: cred.username,
+		digCred, err := digest.Digest(&chal, digest.Options{
+			Method:   "REGISTER",
+			URI:      cred.URI,
+			Username: cred.Username,
 			Password: passwd,
 		})
 
 		if err != nil {
 			log.Error().Err(err).Msg("Calc digest failed")
-			tx.Respond(sip.NewResponseFromRequest(req, 200, "OK", nil))
-		})
-
-		log.Info().Str("addr", *extIP).Msg("listening on")
-
-		switch *tran {
-		case "tls", "wss":
-			cert, err := tls.LoadX509KeyPair(*tlscrt, *tlskey)
-			if err ! = nil {
-				log.Fatal().Err(err).Msg("Fail to load x509 key and crt"0
-			}
-			if err := srv.ListenAndServerTLS(ctx, *tran, *extIP, &tls.Config{Certificates: []tls.Certificate{cert}}); err != nil {
-				log.Info().Err(err).Msg("listening stop"0
-			}
+			tx.Respond(sip.NewResponseFromRequest(req, 401, "Bad Credentials", nil))
 			return
 		}
-		srv.ListenAndServce(ctx, *tran, *extIP_)
+
+		if cred.Response != digCred.Response {
+			tx.Respond(sip.NewResponseFromRequest(req, 401, "Unauthorized", nil))
+			return
+		}
+
+		log.Info().Str("username", cred.Username).Str("source", req.Source()).Msg("New client registered")
+		tx.Respond(sip.NewResponseFromRequest(req, 200, "OK", nil))
+	})
+
+	log.Info().Str("addr", *extIP).Msg("listening on")
+
+	switch *tran {
+	case "tls", "wss":
+		cert, err := tls.LoadX509KeyPair(*tlscrt, *tlskey)
+		if err != nil {
+			log.Fatal().Err(err).Msg("Fail to load x509 key and crt")
+		}
+		if err := srv.ListenAndServeTLS(ctx, *tran, *extIP, &tls.Config{Certificates: []tls.Certificate{cert}}); err != nil {
+			log.Info().Err(err).Msg("listening stop")
+		}
+		return
 	}
-
-
+	srv.ListenAndServe(ctx, *tran, *extIP)
+}
