@@ -14,6 +14,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers"
 	"github.com/icholy/digest"
 )
 
@@ -37,11 +38,11 @@ func main() {
 		log.Logger = log.Logger.Level(lvl)
 	}
 
-	registry := make(map[string]string)
-	for _, c := range strings.Split(*creds, ",") {
+	registry := databaser.PullRegistry()
+	/*for _, c := range strings.Split(*creds, ",") {
 		arr := strings.Split(c, ":")
 		registry[arr[0]] = arr[1]
-	}
+	}*/
 
 	ua, err := sipgo.NewUA(
 		sipgo.WithUserAgent("SIPGO"),

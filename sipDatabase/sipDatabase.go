@@ -10,7 +10,7 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "postgres"
-	password = "postgres"
+	dbPassword = "postgres"
 	dbname   = "sip_box"
 )
 
@@ -19,7 +19,7 @@ var username, password, sip_password string
 var extension, id int
 
 func main() {
-	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, dbPassword, dbname)
 
 	// open database
 	db, err := sql.Open("postgres", psqlconn)
@@ -43,15 +43,15 @@ func main() {
 		fmt.Println(id, username, password, extension, sip_password)
 		newNumber = extension + 1
 	}
-	insertQry := `INSERT INTO users (username, password, extension, sip_password) VALUES ('bruggy','bruggerton',$1,'bruggerton') RETURNING username, password, extension, sip_password;`
-	insrtStmt, e := db.Exec(insertQry, newNumber)
+	insertQry := `INSERT INTO users (username, password, extension, sip_password) VALUES ($1,$2,$3,$4) RETURNING username, password, extension, sip_password;`
+	insrtStmt, e := db.Query(insertQry, newNumber)
 	CheckError(e)
 	defer insrtStmt.Close()
 	for insrtStmt.Next() {
-		err = insrtStmt.Scan(&id, &username, &password, &extension, &sip_password)
+		err = insrtStmt.Scan(&username, &password, &extension, &sip_password)
 		CheckError(err)
 
-		fmt.Println(id, username, password, extension, sip_password)
+		fmt.Println(username, password, extension, sip_password)
 	}
 
 	// check db
