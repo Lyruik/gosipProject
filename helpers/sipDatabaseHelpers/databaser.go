@@ -16,7 +16,7 @@ const (
 
 // Globals here
 var sip_password string
-var extensions int
+var extension int
 
 func PullRegistry() map[int]string {
 	registry := make(map[int]string)
