@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/emiago/sipgo"
@@ -20,7 +19,6 @@ import (
 
 func main() {
 	extIP := flag.String("ip", "10.12.1.50:5060", "My external ip")
-	creds := flag.String("u", "alice:alice", "Comma seperated username:password list")
 	tran := flag.String("t", "udp", "Transport")
 	tlskey := flag.String("tlskey", "", "TLS key path")
 	tlscrt := flag.String("tlscrt", "", "TLS crt path")
@@ -83,7 +81,7 @@ func main() {
 			return
 		}
 
-		passwd, exists := registry[cred.Username]
+		passwd, exists := registry[cred.extension]
 		if !exists {
 			tx.Respond(sip.NewResponseFromRequest(req, 404, "Bad authorization header", nil))
 			return

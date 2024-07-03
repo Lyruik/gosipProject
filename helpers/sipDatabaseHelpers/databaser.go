@@ -15,10 +15,9 @@ const (
 )
 
 // Globals here
-var sip_password string
-var extension int
+var sip_password, extension string
 
-func PullRegistry() map[int]string {
+func PullRegistry() map[string]string {
 	registry := make(map[int]string)
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode-disable", host, port, user, dbPassword, dbname)
 
@@ -39,7 +38,7 @@ func PullRegistry() map[int]string {
 		err = rows.Scan(&extension, &sip_password)
 		CheckError(err)
 
-		registry[extension] = sip_password
+		registry[string(extension)] = sip_password
 	}
 	fmt.Println("Pulled registry") // maybe could add a line about when it was pulled and by who?
 	return registry
