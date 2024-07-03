@@ -2,6 +2,8 @@ github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703223129-
 github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703223129-d90d9b3b710e/go.mod h1:ebhlbkJo8TBVIJonfeXIif9HcsJswlZ0v/8JVSz6cL8=
 github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703223329-0acf54afc1e4 h1:PTBh0V9G8bLACaviXkptKfz8SkRt17dJ9f8UDgEl/Uk=
 github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703223329-0acf54afc1e4/go.mod h1:ebhlbkJo8TBVIJonfeXIif9HcsJswlZ0v/8JVSz6cL8=
+github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703224240-647d592aa9b5 h1:KBBgvo/ZCsnzFgs55TeRY9eu7SANnrZktn+I8yAAl2Y=
+github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703224240-647d592aa9b5/go.mod h1:ebhlbkJo8TBVIJonfeXIif9HcsJswlZ0v/8JVSz6cL8=
 github.com/coreos/go-systemd/v22 v22.5.0/go.mod h1:Y58oyj3AT4RCenI/lSvhwexgC+NSVTIJ3seZv2GcEnc=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=

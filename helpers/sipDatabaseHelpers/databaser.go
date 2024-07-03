@@ -18,7 +18,7 @@ const (
 var sip_password, extension string
 
 func PullRegistry() map[string]string {
-	registry := make(map[int]string)
+	registry := make(map[string]string)
 	psqlconn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode-disable", host, port, user, dbPassword, dbname)
 
 	// open database
