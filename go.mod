@@ -3,7 +3,7 @@ module github.com/Lyruik/gosipProject
 go 1.22.3
 
 require (
-	github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240703224602-7462509e6423
+	github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers v0.0.0-20240708172331-87462081409e
 	github.com/emiago/sipgo v0.22.1
 	github.com/icholy/digest v0.1.23
 	github.com/rs/zerolog v1.33.0
