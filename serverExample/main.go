@@ -19,9 +19,8 @@ import (
 
 func main() {
 	extIP := flag.String("ip", "10.12.1.234:5060", "My external ip")
-	tlsExtIP := flag.String("tip", "10.12.1.234:5061", "My tls external")
 	tran := flag.String("t", "udp", "Transport")
-	tlsTran := flag.String("tt", "tls", "Transport")
+	// tlsTran := flag.String("tt", "tls", "Transport")
 	tlskey := flag.String("tlskey", "/root/.certs/keys/asterisk.key", "TLS key path")
 	tlscrt := flag.String("tlscrt", "/root/.certs/keys/asterisk.crt", "TLS crt path")
 	// maybe should make this like env variable lmao
@@ -121,20 +120,6 @@ func main() {
 			log.Fatal().Err(err).Msg("Fail to load x509 key and crt")
 		}
 		if err := srv.ListenAndServeTLS(ctx, *tran, *extIP, &tls.Config{Certificates: []tls.Certificate{cert}}); err != nil {
-			log.Info().Err(err).Msg("listening stop")
-		}
-		return
-	}
-	cert, err := tls.LoadX509KeyPair(*tlscrt, *tlskey)
-	srv.ListenAndServeTLS(ctx, *tlsTran, *tlsExtIP, &tls.Config{Certificates: []tls.Certificate{cert}})
-	switch *tlsTran {
-	case "tls", "wss":
-		cert, err := tls.LoadX509KeyPair(*tlscrt, *tlskey)
-		if err != nil {
-			log.Fatal().Err(err).Msg("Fail to load x509 key and crt")
-		}
-		log.Info().Str("addr", *tlsExtIP).Msg("listening on")
-		if err := srv.ListenAndServeTLS(ctx, *tlsTran, *tlsExtIP, &tls.Config{Certificates: []tls.Certificate{cert}}); err != nil {
 			log.Info().Err(err).Msg("listening stop")
 		}
 		return
