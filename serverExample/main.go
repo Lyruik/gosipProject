@@ -13,7 +13,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers"
+	databaser "github.com/Lyruik/gosipProject/helpers/sipDatabaseHelpers"
 	"github.com/icholy/digest"
 )
 
@@ -81,7 +81,7 @@ func main() {
 			return
 		}
 
-		passwd, exists := registry[cred.extension]
+		passwd, exists := registry[cred.Username]
 		if !exists {
 			tx.Respond(sip.NewResponseFromRequest(req, 404, "Bad authorization header", nil))
 			return
